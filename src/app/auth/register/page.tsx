@@ -2,7 +2,6 @@
 
 import RegisterForm from '../../../../components/RegisterForm';
 import { useRouter } from 'next/navigation';
-import { BasicButton } from '../../../../components/Button';
 import axios from 'axios';
 const apiUrl = process.env.NEXT_PUBLIC_API_KEY;
 

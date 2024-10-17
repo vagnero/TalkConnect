@@ -2,7 +2,6 @@
 
 import AuthForm from '../../../../components/AuthForm';
 import { useRouter } from 'next/navigation';
-import { BasicButton } from '../../../../components/Button';
 const apiUrl = process.env.NEXT_PUBLIC_API_KEY;
 
 import axios from 'axios';

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { BasicButton } from './Button';
-import Link from "next/link";
 
 type AuthFormProps = {
   onSubmit: (name: string, username: string, password: string, role: string) => void;

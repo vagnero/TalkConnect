@@ -54,10 +54,10 @@ class SipClient {
         progress: () => {
           console.log('Call is in progress');
         },
-        failed: (e: any) => {
-          //console.log('Call failed with cause: ' + (e.data.cause || 'Unknown'));
-        },
-        ended: (e: any) => {
+        failed: (e: { cause: string }) => {
+            console.log('Call failed with cause: ' + (e.cause || 'Unknown'));
+          },
+          ended: () => {
           //console.log('Call ended with cause: ' + (e.data.cause || 'Unknown'));
         },
         confirmed: () => {

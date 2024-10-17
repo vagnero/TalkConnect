@@ -9,10 +9,7 @@ interface Friend {
   username: string;
 }
 
-interface User {
-  id: number;
-  username: string;
-}
+
 
 interface FriendListProps {
   onFriendSelect: (friendId: number) => void;

@@ -1,8 +1,6 @@
 'use client';
 // pages/index.tsx
 import React, { useEffect, useRef, useState } from 'react';
-import { FiPhone } from 'react-icons/fi'; // Ícone de telefone
-import FriendList from '../../../components/FriendList';
 import MessageList from '../../../components/MessageList';
 import SipClient from '../jssip/SipCliente';
 import Header from '../../../components/Header';
