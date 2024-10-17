@@ -13,14 +13,26 @@ console.log("ID DO USUARIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: "+userId);
 const Home: React.FC = () => {
   const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
   const [incomingCall, setIncomingCall] = useState<boolean>(false); // Estado para chamadas recebidas
+  const [userId, setUserId] = useState<string | null>(null); // Estado para armazenar o userId
 
   const sipClientRef = useRef<SipClient | null>(null); // Referência da classe SipClient
 
+   // useEffect para garantir que o código é executado no lado do cliente
+   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUserId = localStorage.getItem('userId');
+      console.log("ID DO USUARIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: " + storedUserId);
+      setUserId(storedUserId); // Armazena o userId no estado
+    }
+  }, []);
+
   useEffect(() => {
-    sipClientRef.current = new SipClient(userId || '', '1234', () => {
+    if (userId) {
+      sipClientRef.current = new SipClient(userId, '1234', () => {
         setIncomingCall(true);
-    });
-}, [userId]);
+      });
+    }
+  }, [userId]);
   const handleFriendSelect = (friendId: number) => {
 
     setSelectedFriendId(friendId);
