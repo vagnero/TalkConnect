@@ -1,5 +1,5 @@
 // components/MessageList.tsx
-import React, { useEffect, useState, useRef  } from 'react';
+import React, { useEffect, useState  } from 'react';
 import axios from 'axios';
 import { Client } from '@stomp/stompjs';
 
