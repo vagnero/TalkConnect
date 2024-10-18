@@ -58,10 +58,19 @@ class SipClient {
             console.log('Call failed with cause: ' + (e.cause || 'Unknown'));
           },
           ended: () => {
-          //console.log('Call ended with cause: ' + (e.data.cause || 'Unknown'));
+            console.log('Call ended');
+            this.currentSession = null; // Limpa a sessão ao final
         },
         confirmed: () => {
           console.log('Call confirmed');
+          if (this.currentSession) {
+            // Adiciona o listener de áudio ao confirmar a chamada
+            this.currentSession.connection.addEventListener('track', (event: RTCTrackEvent) => {
+              const audioElement = document.createElement('audio');
+              audioElement.srcObject = event.streams[0]; // Access the first stream
+              audioElement.play();
+            });
+          }
         },
       },
       mediaConstraints: { audio: true, video: false },
