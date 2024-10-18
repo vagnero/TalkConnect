@@ -9,45 +9,49 @@ interface CallActionProps {
 }
 
 const CallAction: React.FC<CallActionProps> = ({ onAccept, onReject, onEndCall, incomingCall }) => {
-  const [isOnCall, setIsOnCall] = useState(false); // Estado para verificar se a chamada foi aceita
-  const ringtone = useRef(new Audio('/assets/sounds/ringtone.mp3')); // useRef para manter o áudio entre renderizações
+  const [isOnCall, setIsOnCall] = useState(false);
+  const ringtoneRef = useRef<HTMLAudioElement | null>(null);
 
-  // Função para aceitar a chamada
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Instantiate the Audio object only on the client side
+      ringtoneRef.current = new Audio('/assets/sounds/ringtone.mp3');
+    }
+  }, []);
+
   const handleAccept = () => {
-    onAccept();         // Chama a função passada por props
-    setIsOnCall(true);  // Atualiza o estado para "em chamada"
-    ringtone.current.pause();   // Para o ringtone
+    onAccept();
+    setIsOnCall(true);
+    ringtoneRef.current?.pause();
   };
 
-  // Função para recusar a chamada
   const handleReject = () => {
-    onReject();         // Chama a função de recusar chamada
-    setIsOnCall(false); // Garante que o estado volte ao normal
-    ringtone.current.pause();   // Para o ringtone
+    onReject();
+    setIsOnCall(false);
+    ringtoneRef.current?.pause();
   };
 
-  // Função para finalizar a chamada
   const handleEndCall = () => {
-    onEndCall();        // Chama a função de finalizar chamada
-    setIsOnCall(false); // Reseta o estado de "em chamada"
-    ringtone.current.pause();   // Para o ringtone
+    onEndCall();
+    setIsOnCall(false);
+    ringtoneRef.current?.pause();
   };
 
   useEffect(() => {
     if (incomingCall && !isOnCall) {
-      ringtone.current.play(); // Toca o som quando a chamada é recebida
+      ringtoneRef.current?.play();
     }
 
-    // Limpa o efeito para parar o som quando o componente for desmontado ou a chamada for aceita/rejeitada
     return () => {
-      ringtone.current.pause(); // Para o som ao desmontar
-      ringtone.current.currentTime = 0; // Reseta o tempo do áudio
+      ringtoneRef.current?.pause();
+      if (ringtoneRef.current) {
+        ringtoneRef.current.currentTime = 0;
+      }
     };
-  }, [incomingCall, isOnCall]); // Executa quando `incomingCall` ou `isOnCall` mudar
+  }, [incomingCall, isOnCall]);
 
   return (
     <div>
-      {/* Se houver uma chamada recebida e não estiver em chamada ainda */}
       {incomingCall && !isOnCall && (
         <div className="bg-gray-200 p-2 flex justify-between items-center">
           <span className="text-black">Chamada recebida...</span>
@@ -62,7 +66,6 @@ const CallAction: React.FC<CallActionProps> = ({ onAccept, onReject, onEndCall, 
         </div>
       )}
 
-      {/* Se a chamada estiver ativa, mostrar o estado de "em chamada" */}
       {isOnCall && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 text-white">
           <div className="text-center">
