@@ -1,4 +1,5 @@
 // pages/index.tsx
+"use client"; 
 import React, { useEffect, useRef, useState } from 'react';
 import MessageList from '../../../components/MessageList';
 import SipClient from '../jssip/SipCliente';
