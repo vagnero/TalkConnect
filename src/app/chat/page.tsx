@@ -8,8 +8,6 @@ import CallAction from '../../../components/CallActionProps';
 import FriendListToggle from '../../../components/FriendListToggle';
 
 
-const userId = localStorage.getItem('userId');
-console.log("ID DO USUARIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: "+userId);
 const Home: React.FC = () => {
   const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
   const [incomingCall, setIncomingCall] = useState<boolean>(false); // Estado para chamadas recebidas
