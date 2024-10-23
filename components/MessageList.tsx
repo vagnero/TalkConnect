@@ -165,7 +165,7 @@ const MessageList: React.FC<MessageListProps> = ({ friendId }) => {
       /> */}
 
       {/* Formulário para enviar nova mensagem */}
-      <form onSubmit={handleSendMessage} className="flex p-2 bg-gray-200">
+      <form onSubmit={handleSendMessage} className="flex p-2 text-black">
         <input
           type="text"
           value={newMessage}
