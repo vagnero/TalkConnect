@@ -2,7 +2,7 @@ import JsSIP from 'jssip';
 import { RTCSessionEvent, UA } from 'jssip/lib/UA';
 import { RTCSession } from 'jssip/lib/RTCSession';
 const wss = process.env.NEXT_PUBLIC_ASTERISK_WSS;
-const domain = process.env.NEXT_PUBLIC_API_KEY;
+const domain = process.env.NEXT_PUBLIC_DOMAIN_URL;
 
 class SipClient {
   private ua: UA;
