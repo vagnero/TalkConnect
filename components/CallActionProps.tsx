@@ -8,60 +8,63 @@ interface CallActionProps {
   onReject: () => void;
   onEndCall: () => void;
   incomingCall: boolean;
+  isOnCall: boolean; // Adiciona isOnCall como prop
+  isConferenceCall: boolean; // Nova prop para indicar se é uma chamada de conferência
 }
 
-const CallAction: React.FC<CallActionProps> = ({ onAccept, onReject, onEndCall, incomingCall }) => {
-  const [isOnCall, setIsOnCall] = useState(false);
+
+
+const CallAction: React.FC<CallActionProps> = ({ 
+  onAccept, 
+  onReject, 
+  onEndCall, 
+  incomingCall, 
+  isOnCall, 
+  isConferenceCall 
+}) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const ringtoneRef = useRef<HTMLAudioElement | null>(null);
-
-  // Configura o áudio uma vez
+  console.log(isConferenceCall);
   useEffect(() => {
     if (typeof window !== 'undefined') {
       ringtoneRef.current = new Audio('/app/assets/sounds/sound.mp3');
     }
   }, []);
 
-  // Efeito para lidar com a chegada de chamadas
   useEffect(() => {
     if (incomingCall && !isOnCall && !isModalOpen) {
-      ringtoneRef.current?.play(); // Tocar o áudio quando a chamada chega
-      setModalOpen(true); // Abre o modal
+      ringtoneRef.current?.play();
+      setModalOpen(true);
     }
   }, [incomingCall, isOnCall, isModalOpen]);
 
   const handleAccept = () => {
     onAccept();
-    setIsOnCall(true);
     setModalOpen(false);
-    ringtoneRef.current?.pause(); // Para o ringtone ao aceitar
+    ringtoneRef.current?.pause();
   };
 
   const handleReject = () => {
     onReject();
-    setIsOnCall(false);
     setModalOpen(false);
-    ringtoneRef.current?.pause(); // Para o ringtone ao recusar
+    ringtoneRef.current?.pause();
   };
 
-  const handleEndCall = () => {
-    onEndCall();
-    setIsOnCall(false);
-    ringtoneRef.current?.pause(); // Para o ringtone ao finalizar a chamada
-  };
+  
 
   return (
     <div>
-      {isOnCall && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 text-white">
-          <div className="text-center">
-            <h2 className="text-2xl mb-4">Em chamada...</h2>
-            <button onClick={handleEndCall} className="bg-red-500 text-white p-2 rounded">
-              <FiPhoneOff size={20} /> Finalizar Chamada
-            </button>
-          </div>
-        </div>
-      )}
+     {isOnCall && !isConferenceCall && (
+  <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 text-white">
+    <div className="text-center">
+      <h2 className="text-2xl mb-4">Em chamada...</h2>
+      {/* O botão "Finalizar Chamada" só será exibido se não for uma chamada de conferência */}
+      <button onClick={onEndCall} className="bg-red-500 text-white p-2 rounded">
+        <FiPhoneOff size={20} /> Finalizar Chamada
+      </button>
+    </div>
+  </div>
+)}
 
       <Dialog open={isModalOpen} onClose={() => setModalOpen(false)} className="relative z-10">
         <DialogBackdrop transition className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />

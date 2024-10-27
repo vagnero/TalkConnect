@@ -115,26 +115,6 @@ const MessageList: React.FC<MessageListProps> = ({ friendId }) => {
   // Ordena as mensagens pela data de criação
   const sortedMessages = messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-    // Função para realizar uma chamada SIP
-    // const handleCall = () => {
-    //   if (sipClientRef.current) {
-    //     sipClientRef.current.makeCall(friendId.toString()); // Faz uma chamada SIP para o ID do amigo
-    //   }
-    // };
-  // Função para aceitar a chamada
-  // const handleAcceptCall = () => {
-  //   sipClientRef.current?.answerCall();
-  //   setIncomingCall(false); // Reseta o estado da chamada recebida
-  // };
-
-  // // Função para recusar a chamada
-  // const handleRejectCall = () => {
-  //   sipClientRef.current?.rejectCall();
-  //   setIncomingCall(false); // Reseta o estado da chamada recebida
-  // };
-  // const handleEndCall = () => {
-  //   sipClientRef.current?.endCall();
-  // };
     
   return (
     <div className="flex flex-col h-full w-full">
@@ -155,17 +135,8 @@ const MessageList: React.FC<MessageListProps> = ({ friendId }) => {
         </ul>
       </div>
 
-      {/* Se houver uma chamada recebida, exibir os botões */}
-         {/* Componente CallAction para gerenciar chamadas */}
-         {/* <CallAction
-        incomingCall={incomingCall}
-        // onAccept={handleAcceptCall}
-        // onReject={handleRejectCall}
-        // onEndCall={handleEndCall}
-      /> */}
-
       {/* Formulário para enviar nova mensagem */}
-      <form onSubmit={handleSendMessage} className="flex p-2 text-black">
+      <form onSubmit={handleSendMessage} className="flex p-2 bg-white  text-black">
         <input
           type="text"
           value={newMessage}

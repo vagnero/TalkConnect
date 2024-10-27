@@ -1,4 +1,3 @@
-// pages/index.tsx
 "use client"; 
 import React, { useEffect, useRef, useState } from 'react';
 import MessageList from '../../../components/MessageList';
@@ -6,56 +5,84 @@ import SipClient from '../jssip/SipCliente';
 import Header from '../../../components/Header';
 import CallAction from '../../../components/CallActionProps';
 import FriendListToggle from '../../../components/FriendListToggle';
+import ConferenceMessages from '../../../components/ConferenceMessages';
 
 const Home: React.FC = () => {
   const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
-  const [incomingCall, setIncomingCall] = useState<boolean>(false); // Estado para chamadas recebidas
-  const [userId, setUserId] = useState<string | null>(null); // Estado para armazenar o userId
-  const [isOnCall, setIsOnCall] = useState<boolean>(false); // Adiciona o estado de "em chamada"
+  const [selectedConferenceId, setselectedConferenceId] = useState<number | null>(null);
+  const [incomingCall, setIncomingCall] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isOnCall, setIsOnCall] = useState<boolean>(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const ringtoneRef = useRef<HTMLAudioElement | null>(null);
+  const [isConferenceCall, setIsConferenceCall] = useState<boolean>(false);
 
-  const sipClientRef = useRef<SipClient | null>(null); // Referência da classe SipClient
 
-  // useEffect para garantir que o código é executado no lado do cliente
+
+  const sipClientRef = useRef<SipClient | null>(null);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedUserId = localStorage.getItem('userId');
-      setUserId(storedUserId); // Armazena o userId no estado
+      setUserId(storedUserId);
     }
   }, []);
+
+  
 
   useEffect(() => {
     if (userId) {
       sipClientRef.current = new SipClient(userId, '1234', () => {
-        setIncomingCall(true); // Configura o estado quando há uma chamada recebida
+        setIncomingCall(true);
       });
     }
   }, [userId]);
 
   const handleFriendSelect = (friendId: number) => {
+    console.log('Amigo selecionado:', friendId); // Log para verificar a seleção
     setSelectedFriendId(friendId);
-  };
+    setselectedConferenceId(null); // Limpa a conferência ao selecionar um amigo
+};
 
-  const handleCallFriend = (friendId: number) => {
+const handleConferenceSelect = (conferenceId: number) => {
+    console.log('Conferência selecionada:', conferenceId); // Log para verificar a seleção
+    setselectedConferenceId(conferenceId);
+    setSelectedFriendId(null); // Limpa o amigo ao selecionar uma conferência
+};
+
+const handleCallFriend = (friendId: number) => {
+  if (sipClientRef.current) {
+    sipClientRef.current.makeCall(friendId.toString());
+    setIsOnCall(true);
+    setIsConferenceCall(false); // Chamadas para amigos são chamadas normais
+  }
+};
+
+
+
+  const handleCallConference = (conferenceId: number) => {
     if (sipClientRef.current) {
-      sipClientRef.current.makeCall(friendId.toString()); // Faz uma chamada SIP para o ID do amigo
-      setIsOnCall(true); // Configura o estado para "em chamada"
+      sipClientRef.current.makeCall(conferenceId.toString()); // Chame a conferência
+      setIsOnCall(true);
+      setIsConferenceCall(true); // Define que é uma chamada de conferência
     }
   };
 
   const handleAcceptCall = () => {
     sipClientRef.current?.answerCall();
-    setIncomingCall(false); // Reseta o estado da chamada recebida
-    setIsOnCall(true); // Configura o estado para "em chamada"
+    setIncomingCall(false);
+    setIsOnCall(true);
   };
 
   const handleRejectCall = () => {
     sipClientRef.current?.rejectCall();
-    setIncomingCall(false); // Reseta o estado da chamada recebida
+    setIncomingCall(false);
   };
 
   const handleEndCall = () => {
     sipClientRef.current?.endCall();
-    setIsOnCall(false); // Reseta o estado quando a chamada terminar
+    setIsOnCall(false);
+    setIsConferenceCall(false); // Reseta o estado após terminar a chamada
   };
 
   return (
@@ -65,33 +92,32 @@ const Home: React.FC = () => {
         <FriendListToggle 
           onFriendSelect={handleFriendSelect} 
           onCallFriend={handleCallFriend}
+          onConferenceSelect={handleConferenceSelect}
+          onCallConference={handleCallConference}
         />
+        
+        {/* Renderiza MessageList ou ConferenceMessages baseado na seleção */}
         {selectedFriendId ? (
-          <MessageList friendId={selectedFriendId} />
-        ) : (
-          <div className="flex-grow bg-gray-200 flex items-center justify-center">
-            <p className="text-xl text-gray-600">Selecione um amigo para ver as mensagens</p>
-          </div>
-        )}
+  <MessageList friendId={selectedFriendId} />
+) : selectedConferenceId ? (
+  <ConferenceMessages conferenceId={selectedConferenceId} />
+) : (
+  <div className="flex-grow bg-gray-200 flex items-center justify-center">
+    <p className="text-xl text-gray-600">Selecione um amigo ou conferência para ver as mensagens</p>
+  </div>
+)}
       </div>
 
       <CallAction
-        incomingCall={incomingCall}
-        onAccept={handleAcceptCall}
-        onReject={handleRejectCall}
-        onEndCall={handleEndCall}
-      />
+  incomingCall={incomingCall}
+  onAccept={handleAcceptCall}
+  onReject={handleRejectCall}
+  onEndCall={handleEndCall}
+  isOnCall={isOnCall}
+  isConferenceCall={isConferenceCall}
+/>
 
-      {isOnCall && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 text-white">
-          <div className="text-center">
-            <h2 className="text-2xl mb-4">Em chamada...</h2>
-            <button onClick={handleEndCall} className="bg-red-500 text-white p-2 rounded">
-              Finalizar Chamada
-            </button>
-          </div>
-        </div>
-      )}
+     
     </div>
   );
 };
