@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
     "@material-tailwind/react": "^2.1.10",
     "@stomp/stompjs": "^7.0.0",
     "@types/jssip": "^3.5.4",
