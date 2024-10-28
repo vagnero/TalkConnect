@@ -13,8 +13,6 @@ const Home: React.FC = () => {
   const [incomingCall, setIncomingCall] = useState<boolean>(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [isOnCall, setIsOnCall] = useState<boolean>(false);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const ringtoneRef = useRef<HTMLAudioElement | null>(null);
   const [isConferenceCall, setIsConferenceCall] = useState<boolean>(false);
 
 
