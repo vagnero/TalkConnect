@@ -22,7 +22,6 @@ const FriendListToggle: React.FC<FriendListToggleProps> = ({ onFriendSelect, onC
   const [isFriendListOpen, setIsFriendListOpen] = useState(false); 
   const [isConferenceOpen, setIsConferenceOpen] = useState(false); 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false); 
-  const [selectedConferenceId, setSelectedConferenceId] = useState<number | null>(null); // Estado para o ID da conferência selecionada
 
   const toggleFriendList = () => {
     setIsFriendListOpen(!isFriendListOpen);
@@ -42,12 +41,6 @@ const FriendListToggle: React.FC<FriendListToggleProps> = ({ onFriendSelect, onC
     setIsConferenceOpen(false);
   };
 
-  const handleConferenceSelect = (conferenceId: number) => {
-    console.log('Conferência selecionada:', conferenceId); // Verifica a seleção
-    setSelectedConferenceId(conferenceId); // Armazena o ID da conferência
-    setIsConferenceOpen(false); // Você pode querer fechar a lista de conferências aqui, se necessário
-    setIsNotificationsOpen(false); // Fechar outros painéis, se necessário
-  };
 
   const handleLogout = async () => {
     try {
