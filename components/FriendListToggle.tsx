@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { FiBell, FiSettings, FiUsers } from 'react-icons/fi'; 
+import { FiBell, FiUsers } from 'react-icons/fi'; 
 import { PiUsersThreeFill } from "react-icons/pi";
 import { IoIosLogOut } from 'react-icons/io';
 import FriendList from './FriendList'; 
 import PendingFriends from './PendingFriends';
 import ConferenceList from './ConferenceList';
-import ConferenceMessages from './ConferenceMessages'; // Importa o ConferenceMessages
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
