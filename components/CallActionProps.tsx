@@ -33,6 +33,9 @@ const CallAction: React.FC<CallActionProps> = ({
 
   useEffect(() => {
     if (incomingCall && !isOnCall && !isModalOpen) {
+      if (ringtoneRef.current) {
+        ringtoneRef.current.loop = true;
+      }
       ringtoneRef.current?.play();
       setModalOpen(true);
     }
@@ -58,6 +61,11 @@ const CallAction: React.FC<CallActionProps> = ({
   <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 text-white">
     <div className="text-center">
       <h2 className="text-2xl mb-4">Em chamada...</h2>
+       {/* Vídeos Local e Remoto */}
+       <div className="video-container mb-4">
+        <video id="localVideo" autoPlay muted className="local-video w-40 h-40 border border-gray-300 rounded"></video>
+        <video id="remoteVideo" autoPlay className="remote-video w-80 h-80 border border-gray-300 rounded"></video>
+      </div>
       {/* O botão "Finalizar Chamada" só será exibido se não for uma chamada de conferência */}
       <button onClick={onEndCall} className="bg-red-500 text-white p-2 rounded">
         <FiPhoneOff size={20} /> Finalizar Chamada

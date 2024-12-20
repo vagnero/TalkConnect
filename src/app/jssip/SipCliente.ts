@@ -57,38 +57,59 @@ class SipClient {
 
   // Método para fazer chamadas
   public makeCall(targetUri: string) {
-    const options = {
-      eventHandlers: {
-        progress: () => {
-          console.log('Call is in progress');
-        },
-        failed: (e: { cause: string }) => {
-            console.log('Call failed with cause: ' + (e.cause || 'Unknown'));
+    // Captura mídia local (áudio e vídeo)
+    navigator.mediaDevices
+      .getUserMedia({ audio: true, video: true })
+      .then((stream) => {
+        // Exiba o vídeo local
+        const localVideo = document.getElementById('localVideo') as HTMLVideoElement;
+        if (localVideo) {
+          localVideo.srcObject = stream;
+          localVideo.play();
+        }
+  
+        // Configure as opções para a chamada
+        const options = {
+          eventHandlers: {
+            progress: () => {
+              console.log('Call is in progress');
+            },
+            failed: (e: { cause: string }) => {
+              console.log('Call failed with cause: ' + (e.cause || 'Unknown'));
+            },
+            ended: () => {
+              console.log('Call ended');
+              this.currentSession = null; // Limpa a sessão ao final
+            },
+            confirmed: () => {
+              console.log('Call confirmed');
+              if (this.currentSession) {
+                // Adicione o listener para o vídeo remoto
+                this.currentSession.connection.addEventListener('track', (event: RTCTrackEvent) => {
+                  const remoteVideo = document.getElementById('remoteVideo') as HTMLVideoElement;
+                  if (remoteVideo) {
+                    remoteVideo.srcObject = event.streams[0];
+                    remoteVideo.play();
+                  }
+                });
+              }
+            },
           },
-          ended: () => {
-            console.log('Call ended');
-            this.currentSession = null; // Limpa a sessão ao final
-        },
-        confirmed: () => {
-          console.log('Call confirmed');
-          if (this.currentSession) {
-            // Adiciona o listener de áudio ao confirmar a chamada
-            this.currentSession.connection.addEventListener('track', (event: RTCTrackEvent) => {
-              const audioElement = document.createElement('audio');
-              audioElement.srcObject = event.streams[0]; // Access the first stream
-              audioElement.play();
-            });
-          }
-        },
-      },
-      mediaConstraints: { audio: true, video: false },
-      rtcConfiguration: {
-        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-      },
-    };
-
-    this.ua.call(`sip:${targetUri}@${domain}`, options);
+          mediaConstraints: { audio: true, video: true },
+          rtcConfiguration: {
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+          },
+          mediaStream: stream, // Passe o fluxo de mídia local para a chamada
+        };
+  
+        // Faça a chamada com JsSIP
+        this.ua.call(`sip:${targetUri}@${domain}`, options);
+      })
+      .catch((err) => {
+        console.error('Error accessing media devices:', err);
+      });
   }
+  
 
   // Método público para aceitar chamadas
   public answerCall() {
