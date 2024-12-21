@@ -95,14 +95,12 @@ class SipClient {
               }
             },
           },
+          mediaStream: stream, // Certifique-se de passar o fluxo de mídia local
           mediaConstraints: { audio: true, video: true },
           rtcConfiguration: {
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
           },
-          mediaStream: stream, // Passe o fluxo de mídia local para a chamada
         };
-  
-        // Faça a chamada com JsSIP
         this.ua.call(`sip:${targetUri}@${domain}`, options);
       })
       .catch((err) => {
@@ -114,33 +112,39 @@ class SipClient {
   // Método público para aceitar chamadas
   public answerCall() {
     if (this.currentSession) {
-      const options = {
-        mediaConstraints: { audio: true, video: false },
-        rtcConfiguration: {
-          iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-        },
-      };
-
-      this.currentSession.answer(options);
-
-      // Adicionar o listener de áudio para chamadas recebidas
-      this.currentSession.connection.addEventListener('track', (event: RTCTrackEvent) => {
-        const audioElement = document.createElement('audio');
-        audioElement.srcObject = event.streams[0]; // Acessa o primeiro stream
-        audioElement.play();
-      });
-
-      this.currentSession.on('ended', () => {
-        console.log('Call ended');
-        this.currentSession = null; // Limpa a sessão quando a chamada terminar
-      });
-
-      this.currentSession.on('failed', () => {
-        console.log('Call failed');
-        this.currentSession = null; // Limpa a sessão se a chamada falhar
-      });
+      navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+        .then((stream) => {
+          const options = {
+            mediaStream: stream, // Envia o fluxo local na resposta
+            mediaConstraints: { audio: true, video: true },
+            rtcConfiguration: {
+              iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+            },
+          };
+  
+          if (this.currentSession) {
+            this.currentSession.answer(options);
+          }
+  
+          // Adicionar o listener para vídeo remoto, verificando se `connection` não é nulo
+          const connection = this.currentSession ? this.currentSession.connection : null;
+          if (connection) {
+            connection.addEventListener('track', (event: RTCTrackEvent) => {
+              const remoteVideo = document.getElementById('remoteVideo') as HTMLVideoElement | null;
+              if (remoteVideo) {
+                remoteVideo.srcObject = event.streams[0];
+                remoteVideo.play();
+              }
+            });
+          }
+        })
+        .catch((error) => {
+          console.error('Error accessing media devices:', error);
+        });
     }
   }
+  
+  
 
   // Método público para rejeitar chamadas
   public rejectCall() {
